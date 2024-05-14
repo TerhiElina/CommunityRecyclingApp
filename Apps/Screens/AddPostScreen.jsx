@@ -1,11 +1,11 @@
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, ScrollView, ToastAndroid } from 'react-native'
+import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, ScrollView, ToastAndroid, Alert, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import {useEffect, useState}from 'react'
-import { collection, getDocs, getFirestore} from 'firebase/firestore'
+import { addDoc, collection, getDocs, getFirestore} from 'firebase/firestore'
 import { app } from '../../firebaseConfig'
 import { Formik } from 'formik';
 import {Picker} from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
-import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 
 export default function AddPostScreen() {
   
@@ -13,6 +13,7 @@ export default function AddPostScreen() {
   const storage = getStorage();
   const [image, setImage] = useState(null);
   const [categoryList, setCategoryList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() =>{
     getCategoryList();
@@ -47,27 +48,45 @@ export default function AddPostScreen() {
   };
   //Asetetaan kuva
   const onSubmitMethod = async (value) =>{
-    value.image = image;
+    //Lisätään loading 
+    setLoading(true);
 
   //Muokataan uri muotoinen kuva blob fileksi, jonka voi viedä fireStoreen
+  //Lisäksi muokataan url muotoon, joka voidaan välittä firestoragesta tietokantaan
     const resp = await fetch(image);
     const blob = await resp.blob();
-    const storageRef = ref(storage, 'RecyclingPost/' + Date.now() + ".jpg"); // RecyclingPost on kansio, johon firestoressa tallennetaan
+    const storageRef = ref(storage, 'RecyclingPost/'+Date.now()+".jpg"); // RecyclingPost on kansio, johon firestoressa tallennetaan
 
     uploadBytes(storageRef, blob).then((snapshot) => {
     console.log('Uploaded a blob or file!');
+    }).then((resp) =>{
+      getDownloadURL(storageRef).then(async(downloadUrl) => {
+       console.log(downloadUrl); 
+       value.image=downloadUrl;
+
+       //Lisätään documentti tietokantaan/collectioniin
+       const docRef = await addDoc(collection(db,"UserPost"),value)
+       if (docRef.id){
+        setLoading(false);
+        //Lisätään ilmoitun julkaisun onnistumisesta
+        Alert.alert('Julkaisu onnistunut!')
+       }
+      })
     });
 
   }
   //Formin muotoiluun käytetään formikia, jonka avulla on helppo muotoilla
   //formin ulkoasua.
   return (
+   <KeyboardAvoidingView> 
+        {/*KeyboardAvoidingViewn avulla valittu input field näkyy keyboardin yläpuolella */}
+
     <ScrollView>
     <View className="p-10 flex-1">
       <Text className="text-[27px] font-bold text-red-400">Lisää uusi ilmoitus</Text>
       <Text  className="text-[18px] text-gray-700 mb-7">Täytä tuotteen tiedot ja laita hyvä kiertämään.</Text>
       <Formik
-        initialValues={{title:'' ,desc:'' ,category:'' ,address:'' ,price:'' ,image:''}}
+        initialValues={{title:'' ,desc:'' ,category:'' ,address:'' ,price:'' ,image:''}} //, createdAt:Date.now
         onSubmit={value=>onSubmitMethod(value)}
         //Lisätään validointi, joka tarkistaa annetut kentät
         //jos kenttä on tyhjä, onSubmitia ei kutsuta ja annetaan error-viesti
@@ -134,14 +153,24 @@ export default function AddPostScreen() {
             ))}
           </Picker>
           </View>
-            <TouchableOpacity onPress={handleSubmit} className="p-4 bg-red-400 rounded-full mt-10">
-              <Text className="text-white text-center text-[16px] font-bold">Tallenna</Text>
-            </TouchableOpacity>
+            <TouchableOpacity onPress={handleSubmit}
+              style={{
+                backgroundColor: loading?'#ccc' : '#fc8181'
+              }}
+              disabled={loading}
+              className="p-4 bg-red-400 rounded-full mt-10">
+              {loading?
+                <ActivityIndicator color='#fff'/>
+                :
+                <Text className="text-white text-center text-[16px] font-bold">Tallenna</Text>
+              }
+              </TouchableOpacity>
           </View>
         )}
       </Formik>
     </View>
     </ScrollView>
+    </KeyboardAvoidingView> 
   )
 }
 

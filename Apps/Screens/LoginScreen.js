@@ -1,17 +1,19 @@
-import { Button, View, Text, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native'
+import { Button, View, Text, Image, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 import TabNavigation from './Navigation/TabNavigation';
 import { app } from '../../firebaseConfig';
 import AuthenticatedScreen from './AuthenticatedScreen';
-
+import { useNavigation } from '@react-navigation/native';
+import { collection, doc, getFirestore, getDoc } from 'firebase/firestore';
 
 
 const AuthScreen = ({email, setEmail, password, setPassword, isLogin, setIsLogin, handleAuthentication}) => {
   
   
     return (
-    <View>
+      <KeyboardAvoidingView>
+        <ScrollView>
       <Image source={require('./../../assets/images/loginpic.jpg')}
             className="w-full h-96 object-cover" />
 
@@ -42,34 +44,44 @@ const AuthScreen = ({email, setEmail, password, setPassword, isLogin, setIsLogin
             </Text> 
         </View>  
     </View>
-    </View>
+    </ScrollView>
+  </KeyboardAvoidingView> 
   )
 }
-/*const AuthenticatedScreen = ({user, handleAuthentication}) =>{
-  return(
-    
-     <View>
-      <Text> Welcome</Text>
-      <Button title="Kirjaudu ulos" onPress={handleAuthentication}/>
-        <TabNavigation/>
-      </View>
-    
-  )
-}*/
+
   export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [user, setUser] = useState(null); // Tämän avulla trackataan, onko käyttäjä kirjautunut
     const [isLogin, setIsLogin] = useState(true);
 
-    const auth = getAuth(app);
+    const navigation = useNavigation();
+  const auth = getAuth(app);
+
+  const getUserDocument = async (uid) => {
+    const firestore = getFirestore();
+    const userRef = doc(firestore, 'users', uid);
+    const userDoc = await getDoc(userRef);
+    return userDoc;
+  };
+
     useEffect(() =>{
-      const unsubscribe = onAuthStateChanged(auth, (user) =>{
-        setUser(user);
+      const unsubscribe = onAuthStateChanged(auth, async (user) =>{
+        if (user) {
+          setUser(user);
+
+          //Tarkistetaan onko käyttäjätiedot asetettu
+          const userDoc = await getUserDocument(user.uid); //Saadaan user firestoresta
+          if(!userDoc.exists || !userDoc.data().username || !userDoc.data().profilePicture) {
+            navigation.navigate('SetUserDetails');
+          }
+        } else {
+          setUser(null);
+        }
     });
     //Puhdistetaan subscription
     return () => unsubscribe();
-    }, [auth]);
+    }, [auth, navigation]);
 
     const handleAuthentication = async () => {
       try {
@@ -113,8 +125,3 @@ const AuthScreen = ({email, setEmail, password, setPassword, isLogin, setIsLogin
     </>
     );
   }
-
-
-/*<TouchableOpacity className="p-3 bg-blue-500 rounded-full mt-20">
-            <Text className="text-white text-center text-[18px]">Kirjaudu</Text>
-        </TouchableOpacity>*/

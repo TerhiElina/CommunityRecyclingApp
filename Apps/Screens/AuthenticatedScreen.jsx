@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text, Button, View } from 'react-native';
 import TabNavigation from './Navigation/TabNavigation';
-import LoginScreen from './LoginScreen';
 
 const AuthenticatedScreen = ({ user, handleAuthentication }) => {
   return (

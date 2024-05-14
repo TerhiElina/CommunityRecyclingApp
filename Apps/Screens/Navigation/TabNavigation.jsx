@@ -2,10 +2,11 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AddPostScreen from '../AddPostScreen';
-import HomeScreen from '../HomeScreen'
 import ExploreScreen from '../ExploreScreen';
 import ProfileScreen from '../ProfileScreen';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
+import HomeScreenStackNav from './HomeScreenStackNav';
+import HomeScreen from '../HomeScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,7 +18,7 @@ export default function TabNavigation() {
         //tabBarActiveTintColor: '#fff'
       }
       }>
-      <Tab.Screen name="home" component={HomeScreen}
+      <Tab.Screen name='home-nav' component={HomeScreenStackNav}
         options={{
             tabBarLabel:({color}) => (
             <Text style={{color:color, fontSize:12,marginBottom:3}}>Koti</Text>
