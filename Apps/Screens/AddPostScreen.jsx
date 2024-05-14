@@ -86,7 +86,7 @@ export default function AddPostScreen() {
       <Text className="text-[27px] font-bold text-red-400">Lisää uusi ilmoitus</Text>
       <Text  className="text-[18px] text-gray-700 mb-7">Täytä tuotteen tiedot ja laita hyvä kiertämään.</Text>
       <Formik
-        initialValues={{title:'' ,desc:'' ,category:'' ,address:'' ,price:'' ,image:''}} //, createdAt:Date.now
+        initialValues={{title:'' ,desc:'' ,category:'' ,address:'' ,price:'' ,image:'',createdAt: Date.now()}} //, createdAt:Date.now
         onSubmit={value=>onSubmitMethod(value)}
         //Lisätään validointi, joka tarkistaa annetut kentät
         //jos kenttä on tyhjä, onSubmitia ei kutsuta ja annetaan error-viesti

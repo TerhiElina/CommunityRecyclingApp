@@ -19,7 +19,7 @@ export default function HomeScreen({ user }){
         getCategoryList();
         getLatestItemList();
     }, [])
-
+    //user
     //Haetaan collection slideriä varten
     const getSliders = async () =>{
         // Alustetaan sliderList state tyhjäksi, ettei se lisää joka 

@@ -1,8 +1,10 @@
-import { View, Text, Image} from 'react-native'
+import { View, Text, Image, Share} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native'
+import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-export default function ProductDetail() {
+export default function ProductDetail({navigation}) {
 
     const {params} = useRoute();
     const [product, setProduct] = useState([]);
@@ -10,7 +12,34 @@ export default function ProductDetail() {
         //console.log(params)
         setProduct(params.product);
         params&&setProduct(params.product);
-    },[params])
+        shareButton();
+    },[params,navigation])
+
+    const shareButton=()=> {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity onPress={()=>shareProduct()}>
+                    <Ionicons name="share-social-sharp" size={24} color="white"
+                     style={{marginRight:15}}/>
+                </TouchableOpacity>            
+        ),
+          });
+
+        }
+    //Rakennetaan share toiminnallisuus
+    const shareProduct=async() =>{
+        const content = {
+            message:product.title+"\n"+product.desc,
+
+        }
+        Share.share(content).then(resp=>{
+        console.log(resp);
+        }, (error) =>{
+            console.log(error)
+        })
+        
+    }
+    
   return (
     <View>
         <Image source={{uri: product.image}}
@@ -24,11 +53,11 @@ export default function ProductDetail() {
             <Text className="mt-3 font-bold text-[20px]">Kuvaus</Text> 
             <Text className="text-[16px] text-gray-500 ">{product?.desc}</Text> 
         </View>
-        {/*User info*/}
         <View>
-            <Image source={{uri:product.userImage}}
-                className="w-12 h-12" />
+            <Text>{product.userEmail}</Text>
         </View>
+        {/*Tähän tulee "myyjän" tiedot, kunhan saan käyttäjätietojen välittämisen toimimaan*/}
+        
     </View>
   )
 }

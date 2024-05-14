@@ -14,7 +14,8 @@ export default function HomeScreenStackNav() {
     
       <Stack.Navigator>
         <Stack.Screen name='home' component={HomeScreen}
-          options={{headerShown: false}} />
+          options={{headerShown: false}}
+          />
         <Stack.Screen name='item-list' component={ItemList}
           options={({ route }) => ({ title: route.params.category,
             headerStyle: {backgroundColor: '#fc8181'},
