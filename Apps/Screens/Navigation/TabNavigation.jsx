@@ -7,10 +7,11 @@ import ProfileScreen from '../ProfileScreen';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import HomeScreenStackNav from './HomeScreenStackNav';
 import HomeScreen from '../HomeScreen';
+import ExploreScreenStackNav from './ExploreScreenStackNav';
 
 const Tab = createBottomTabNavigator();
 
-export default function TabNavigation() {
+export default function TabNavigation({user, handleAuthentication}) {
   return (
       <Tab.Navigator screenOptions={{
         headerShown:false
@@ -28,7 +29,7 @@ export default function TabNavigation() {
             ),
             tabBarLabelPosition: "below-icon"
       }}/>
-      <Tab.Screen name="explore" component={ExploreScreen} 
+      <Tab.Screen name="explore" component={ExploreScreenStackNav} 
       options={{
             tabBarLabel:({color}) => (
             <Text style={{color:color, fontSize:12,marginBottom:3}}>Selaa</Text>
@@ -45,7 +46,8 @@ export default function TabNavigation() {
         tabBarIcon:({color, size}) =>(
             <AntDesign name="camerao" size={size} color={color} />       )
   }}/>
-      <Tab.Screen name="profile" component={ProfileScreen} 
+      <Tab.Screen name="profile" component={ProfileScreen}
+      initialParams={{handleAuthentication }}
       options={{
         tabBarLabel:({color}) => (
         <Text style={{color:color, fontSize:12,marginBottom:3}}>Profiili</Text>

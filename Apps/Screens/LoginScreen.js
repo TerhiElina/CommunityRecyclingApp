@@ -19,28 +19,30 @@ const AuthScreen = ({email, setEmail, password, setPassword, isLogin, setIsLogin
 
     <View className="p-8 bg-white mt-[-20px] rounded-t-3xl">
         <Text className="text-[30px] font-bold">Kierrätys</Text>
-        <Text className="text-[18px] text-slate-500 mt-6"> Kierrätä talonyhtiön, työpaikan tai vaikka ystävien kesken!</Text>
+        <Text className="text-[20px] text-slate-500 mt-6 mb-6 ">Kierrätä talonyhtiön, työpaikan tai vaikka ystävien kesken!</Text>
         <TextInput
+            className="border-[1px] border-gray-500 rounded-lg p-2 mb-2"
             value={email}
             onChangeText={setEmail}
             placeholder='Sähköposti'
             autoCapitalize='none'
         />
         <TextInput
+            className="border-[1px] border-gray-500 rounded-lg p-2 mb-3"
             value={password}
             onChangeText={setPassword}
             placeholder='Salasana'
             secureTextEntry
         />
         <View>
-          <TouchableOpacity>
+          <TouchableOpacity className="rounded-full w-40 mb-8">
             <Button title={isLogin ? 'Kirjaudu' : 'Rekisteröidy'} onPress={handleAuthentication} />       
           </TouchableOpacity>
         </View>
         {/*Tähän tulee styleksi buttoncontainer */}
         <View>
-          <Text onPress={() => setIsLogin(!isLogin)}>
-            {isLogin ? 'Oletko uusi käyttäjä? Rekisteröidy' : 'Onko sinulla jo tili? Kirjaudu'}
+          <Text className="text-[16px]" onPress={() => setIsLogin(!isLogin)}>
+            {isLogin ? 'Vai oletko uusi käyttäjä? Rekisteröidy' : 'Onko sinulla jo tili? Kirjaudu'}
             </Text> 
         </View>  
     </View>
@@ -56,7 +58,7 @@ const AuthScreen = ({email, setEmail, password, setPassword, isLogin, setIsLogin
     const [isLogin, setIsLogin] = useState(true);
 
     const navigation = useNavigation();
-  const auth = getAuth(app);
+    const auth = getAuth(app);
 
   const getUserDocument = async (uid) => {
     const firestore = getFirestore();

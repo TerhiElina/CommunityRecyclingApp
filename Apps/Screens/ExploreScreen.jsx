@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { collection, getDocs, getFirestore, orderBy, query, where } from 'firebase/firestore'
 import { app } from '../../firebaseConfig'
 import LatestItemList from '../Components/HomeSreen/LatestItemList'
+import { ScrollView } from 'react-native-gesture-handler'
 
 export default function ExploreScreen() {
 
@@ -19,7 +20,7 @@ export default function ExploreScreen() {
   
     const snapshot = await getDocs(q);
     snapshot.forEach((doc) => {
-      console.log("LÖYTYYKÖ TÄMÄ" + doc.data() )
+      //console.log("LÖYTYYKÖ TÄMÄ" + doc.data() )
       setProductList(productList =>[...productList,doc.data()]);
     })
   }
@@ -27,9 +28,9 @@ export default function ExploreScreen() {
   
 
   return (
-    <View className="p-5 py-8">
+    <ScrollView className="p-5 py-8">
       <Text className="text-[30px] font-bold">Kaikki tuotteet</Text>
       <LatestItemList latestItemList={productList} /> 
-    </View>
+    </ScrollView>
   )
 }
